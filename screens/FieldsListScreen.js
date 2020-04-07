@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, SafeAreaView, ScrollView, FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { API_ABSOLUTE_PATH } from '../config/Config'
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
@@ -9,7 +10,7 @@ export default class FieldsListScreen extends React.Component {
 
   async componentDidMount() {
     try {
-      const response = await fetch('https://api.steinhq.com/v1/storages/5e4279e25a823204986f3b62/fields');
+      const response = await fetch(API_ABSOLUTE_PATH);
       if (!response.ok) {
         throw Error(response.statusText);
       }
@@ -22,6 +23,9 @@ export default class FieldsListScreen extends React.Component {
   }
 
   render() {
+    const { navigation } = this.props;
+    const columns = 3;
+
     if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, padding: 20 }}>
@@ -38,23 +42,27 @@ export default class FieldsListScreen extends React.Component {
       )
     }
 
-    const columns = 3;
-
     return (
       <ScrollView>
         <SafeAreaView style={styles.list}>
           <FlatList
-            //data={this.state.dataSource}
             keyExtractor={item => item.id}
             numColumns={columns}
-            data = {createRows(this.state.dataSource, columns)}
+            data = {this.state.dataSource}
             renderItem={({ item }) => {
               if (item.empty) {
                 return <View style={[styles.item, styles.itemEmpty]} />;
               }
               return (
                 <View style={styles.item}>
-                  <Text style={styles.text}>{item.name}, {item.cropType}, {item.area}</Text>
+                  <Text 
+                  onPress={() => {
+                    /* 1. Navigate to the Details route with params */
+                    this.props.navigation.navigate('FieldDetailsScreen', {
+                      field: JSON.stringify(item),
+                    });
+                  }}
+                  style={styles.text}>{item.name}, {item.cropType}, {item.area}</Text>
                 </View>
               );
             }}
@@ -66,35 +74,18 @@ export default class FieldsListScreen extends React.Component {
   }
 }
 
-const createRows = (data, columns) => {
-  const rows = Math.floor(data.length / columns); // [A]
-  let lastRowElements = data.length - rows * columns; // [B]
-  while (lastRowElements !== columns) { // [C]
-    data.push({ // [D]
-      id: `empty-${lastRowElements}`,
-      name: `empty-${lastRowElements}`,
-      empty: true
-    });
-    lastRowElements += 1; // [E]
-  }
-  return data; // [F]
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
   },
   list: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+    justifyContent: 'center',
+    flex: 1,
+    paddingTop: 30,
   },
   item: {
-    alignItems: "center",
-    flexBasis: 0,
-    flexGrow: 1,
-    margin: 4,
-    padding: 20
+    flex: 1, flexDirection: 'column', margin: 20
   },
   itemEmpty: {
     backgroundColor: "transparent"
