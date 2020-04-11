@@ -1,6 +1,9 @@
 import React from 'react';
-import { View, SafeAreaView, ScrollView, FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { View, SafeAreaView, FlatList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { API_ABSOLUTE_PATH } from '../config/Config'
+import { styles } from '../assets/styles/stylesheets'
+import ActionButton from 'react-native-action-button';
+import { Card, Button } from 'react-native-elements'
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
@@ -43,10 +46,11 @@ export default class FieldsListScreen extends React.Component {
     }
 
     return (
-      <ScrollView>
-        <SafeAreaView style={styles.list}>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.list}>
           <FlatList
-            keyExtractor={item => item.id}
+            contentContainerStyle={styles.contentContainerStyle}
+            //keyExtractor={({ id }, index) => index}
             numColumns={columns}
             data = {this.state.dataSource}
             renderItem={({ item }) => {
@@ -54,43 +58,47 @@ export default class FieldsListScreen extends React.Component {
                 return <View style={[styles.item, styles.itemEmpty]} />;
               }
               return (
-                <View style={styles.item}>
-                  <Text 
-                  onPress={() => {
-                    /* 1. Navigate to the Details route with params */
-                    this.props.navigation.navigate('FieldDetailsScreen', {
+                <TouchableOpacity style={styles.item}
+                  onPress={ () => {
+                    navigation.navigate('FieldDetailsScreen', {
                       field: JSON.stringify(item),
                     });
-                  }}
-                  style={styles.text}>{item.name}, {item.cropType}, {item.area}</Text>
-                </View>
+                  }}>
+                <Card 
+                  containerStyle={{padding: 20}}
+                  style={styles.item}
+                  title={item.name}>
+                    {
+                        <View style={styles.item}>
+                          <Text style={styles.user}>{item.cropType}</Text>
+                          <Text style={styles.user}>{item.area}</Text>
+                          <Button title="See more"
+                            type="clear"
+                            onPress={ () => {
+                              navigation.navigate('FieldDetailsScreen', {
+                                field: JSON.stringify(item),
+                              });
+                            }}
+                          />
+                        </View>
+                    }
+                  </Card>
+                  </TouchableOpacity>
               );
             }}
-            keyExtractor={({ id }, index) => id}
+            listkey={({ id }, index) => index}
+            //keyExtractor={({ id }, index) => id}
+          />
+          </View>
+          <ActionButton
+            bgColor="transparent"
+            buttonColor="rgba(231,76,60,1)"
+            onPress={() => { this.props.navigation.navigate('NewField') }}
           />
       </SafeAreaView>
-      </ScrollView>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 22,
-  },
-  list: {
-    justifyContent: 'center',
-    flex: 1,
-    paddingTop: 30,
-  },
-  item: {
-    flex: 1, flexDirection: 'column', margin: 20
-  },
-  itemEmpty: {
-    backgroundColor: "transparent"
-  }
-});
 
 FieldsListScreen.navigationOptions = {
   title: 'Fields List',

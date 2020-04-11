@@ -17,7 +17,8 @@ const config = Platform.select({
 const FieldsStack = createStackNavigator(
   {
     FieldsList: { screen: FieldsListScreen},
-    FieldDetailsScreen: { screen: FieldDetailsScreen }
+    FieldDetailsScreen: { screen: FieldDetailsScreen },
+    NewField: { screen: NewFieldScreen }
   },
   config
 );
@@ -57,4 +58,4 @@ const tabNavigator = createBottomTabNavigator({
 
 tabNavigator.path = '';
 
-export default tabNavigator;
+export default FieldsStack;
