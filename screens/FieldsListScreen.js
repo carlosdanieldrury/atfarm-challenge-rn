@@ -5,7 +5,8 @@ import { styles } from '../assets/styles/stylesheets';
 import ActionButton from 'react-native-action-button';
 import { Card, Button } from 'react-native-elements';
 import i18n, { translate } from '../config/i18n';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Header } from 'react-native-elements';
+import { SectionGrid } from 'react-native-super-grid';
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
@@ -68,12 +69,24 @@ export default class FieldsListScreen extends React.Component {
   };
 
   SearchFilterFunction(text) {
-    const newData = this.state.dataSourceHolder.filter(function(item) {
-      const itemData = item.name ? item.name.toUpperCase() : ''.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
-
+    var newData = this.state.dataSourceHolder
+    if (text != '') {
+      var sections = []
+      this.state.dataSourceHolder.forEach(item => {
+        var filteredItems = []
+        item.data.forEach(element => {
+          if (element.name.includes(text) || element.cropType.includes(text) ) {
+            filteredItems.push(element)
+          }
+        })
+          sections.push({
+            title: item.title,
+            data: filteredItems
+          })
+      });
+      newData = sections
+  }
+  
     this.setState({
       dataSource: newData,
       search: text,
@@ -111,33 +124,19 @@ export default class FieldsListScreen extends React.Component {
           value={this.state.search}
         />
         <View style={styles.list}>
-        <SectionList
+        <SectionGrid
+            columns={columns}
+            itemDimension={180}
             sections={ this.state.dataSource }
-            renderItem={({ item }) => <Text>{item.name}</Text>}
-            renderSectionHeader={({ section }) => (
-              <Text>{section.title}</Text>
-            )}
-            keyExtractor={(item, index) => item + index}
-          />
-
-          {/* <FlatList
-            contentContainerStyle={styles.contentContainerStyle}
-            numColumns={columns}
-            enableEmptySections={true}
-            data = {this.state.dataSource}
-            renderItem={({ item }) => {
-              if (item.empty) {
-                return <View style={[styles.item, styles.itemEmpty]} />;
-              }
-              return (
-                <TouchableOpacity style={styles.item}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.item}
                   onPress={ () => {
                     navigation.navigate('FieldDetailsScreen', {
                       field: JSON.stringify(item),
                     });
                   }}>
                 <Card 
-                  containerStyle={{padding: 20}}
+                  containerStyle={{padding: 10}}
                   style={styles.item}
                   title={item.name}>
                     {
@@ -156,11 +155,11 @@ export default class FieldsListScreen extends React.Component {
                     }
                   </Card>
                   </TouchableOpacity>
-              );
-            }}
-            listkey={({ id }, index) => index}
-            //keyExtractor={({ id }, index) => id}
-          /> */}
+            )}
+            renderSectionHeader={({ section }) => (
+              <Header centerComponent={ <Text style={{ fontSize: 20, color: '#fff' }}>{section.title}</Text>} />
+            )}
+          />
           </View>
           <ActionButton
             bgColor="transparent"
