@@ -24,6 +24,7 @@
     "fbjs": "^1.0.0",
     "formik": "^2.1.4",
     "i18n-js": "^3.5.1",
+    "json-groupby": "^1.1.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, FlatList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, FlatList, SectionList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { API_ABSOLUTE_PATH } from '../config/Config';
 import { styles } from '../assets/styles/stylesheets';
 import ActionButton from 'react-native-action-button';
@@ -20,13 +20,48 @@ export default class FieldsListScreen extends React.Component {
         throw Error(response.statusText);
       }
       const json = await response.json();
-      this.setState({ isLoading: false, dataSource: json, dataSourceHolder: json, hasAnyErrors: false });
+
+      // sections
+      const dataSource = this.groupByCropType(json)
+      console.log('Data source filtered', JSON.stringify(dataSource))
+      this.setState({ isLoading: false, dataSource: dataSource, dataSourceHolder: dataSource, hasAnyErrors: false });
     } catch (error) {
       console.log(error);
       this.setState({ isLoading: false, hasAnyErrors: true })
     }
   }
 
+  groupByCropType(objetoArray) {
+    var sections = [];
+
+    var objArray = []
+    objetoArray.forEach(element => {
+      var cropTypeName = null
+      if (element['cropType'] == null) {
+        cropTypeName = "UNDEFINED"
+      } else {
+        cropTypeName = element['cropType'].toUpperCase()
+      }
+      objArray.push({
+        name: element.name,
+        cropType: cropTypeName,
+        area: element.area
+      })
+    });
+
+    objArray.forEach(newElement => {
+        var titleName = newElement['cropType']
+        let indexSection = sections.findIndex(i => i.title == titleName)
+        if (indexSection != -1) {
+          sections[indexSection].data.push(newElement)
+        } else {
+          sections.push({ title : titleName, data : [ newElement ] })
+        }
+    });
+
+    return sections
+  }
+  
   clear = () => {
     this.search.clear();
     this.setState({dataSource: this.state.dataSourceHolder})
@@ -47,7 +82,7 @@ export default class FieldsListScreen extends React.Component {
 
   render() {
     const { navigation } = this.props;
-    const columns = 3;
+    const columns = 2;
 
     if (this.state.isLoading) {
       return (
@@ -76,7 +111,16 @@ export default class FieldsListScreen extends React.Component {
           value={this.state.search}
         />
         <View style={styles.list}>
-          <FlatList
+        <SectionList
+            sections={ this.state.dataSource }
+            renderItem={({ item }) => <Text>{item.name}</Text>}
+            renderSectionHeader={({ section }) => (
+              <Text>{section.title}</Text>
+            )}
+            keyExtractor={(item, index) => item + index}
+          />
+
+          {/* <FlatList
             contentContainerStyle={styles.contentContainerStyle}
             numColumns={columns}
             enableEmptySections={true}
@@ -116,7 +160,7 @@ export default class FieldsListScreen extends React.Component {
             }}
             listkey={({ id }, index) => index}
             //keyExtractor={({ id }, index) => id}
-          />
+          /> */}
           </View>
           <ActionButton
             bgColor="transparent"
