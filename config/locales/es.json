@@ -1,6 +1,9 @@
 {
     "fieldsList" : { 
-        "title" : "Lista de Campos"
+        "title" : "Lista de Campos",
+        "see_more": "Ver más",
+        "type_text" : "Escriba aquí...",
+        "error_downloading" : "Hubo un error cuando se buscó los datos."
     },
     "fieldDetails" : { 
         "title" : "Detalles de Campo"

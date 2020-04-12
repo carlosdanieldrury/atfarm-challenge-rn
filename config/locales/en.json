@@ -1,6 +1,9 @@
 {
     "fieldsList" : { 
-        "title" : "Fields List"
+        "title" : "Fields List",
+        "see_more": "See more",
+        "type_text" : "Type Here...",
+        "error_downloading" : "There is an error while downloading information"
     },
     "fieldDetails" : { 
         "title" : "Field Details"

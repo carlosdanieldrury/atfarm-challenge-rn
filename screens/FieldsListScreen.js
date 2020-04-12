@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, SafeAreaView, FlatList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { API_ABSOLUTE_PATH } from '../config/Config'
-import { styles } from '../assets/styles/stylesheets'
+import { API_ABSOLUTE_PATH } from '../config/Config';
+import { styles } from '../assets/styles/stylesheets';
 import ActionButton from 'react-native-action-button';
-import { Card, Button } from 'react-native-elements'
-import i18n, { translate } from '../config/i18n'
+import { Card, Button } from 'react-native-elements';
+import i18n, { translate } from '../config/i18n';
+import { SearchBar } from 'react-native-elements';
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isLoading: true, hasAnyErrors: false };
+    this.state = { isLoading: true, hasAnyErrors: false, dataSource: [], dataSourceHolder : [], search: '' };
   }
 
   async componentDidMount() {
@@ -19,11 +20,29 @@ export default class FieldsListScreen extends React.Component {
         throw Error(response.statusText);
       }
       const json = await response.json();
-      this.setState({ isLoading: false, dataSource: json, hasAnyErrors: false });
+      this.setState({ isLoading: false, dataSource: json, dataSourceHolder: json, hasAnyErrors: false });
     } catch (error) {
       console.log(error);
       this.setState({ isLoading: false, hasAnyErrors: true })
     }
+  }
+
+  clear = () => {
+    this.search.clear();
+    this.setState({dataSource: this.state.dataSourceHolder})
+  };
+
+  SearchFilterFunction(text) {
+    const newData = this.state.dataSourceHolder.filter(function(item) {
+      const itemData = item.name ? item.name.toUpperCase() : ''.toUpperCase();
+      const textData = text.toUpperCase();
+      return itemData.indexOf(textData) > -1;
+    });
+
+    this.setState({
+      dataSource: newData,
+      search: text,
+    });
   }
 
   render() {
@@ -41,18 +60,26 @@ export default class FieldsListScreen extends React.Component {
     if (this.state.hasAnyErrors) {
       return (
         <View style={{ flex: 1, padding: 20 }}>
-          <Text>There is an error while downloading information</Text>
+          <Text>{translate('fieldsList.error_downloading')}</Text>
         </View>
       )
     }
 
     return (
         <SafeAreaView style={styles.container}>
-          <View style={styles.list}>
+          <SearchBar
+          round
+          searchIcon={{ size: 24 }}
+          onChangeText={text => this.SearchFilterFunction(text)}
+          onClear={text => this.SearchFilterFunction('')}
+          placeholder={translate('fieldsList.type_text')}
+          value={this.state.search}
+        />
+        <View style={styles.list}>
           <FlatList
             contentContainerStyle={styles.contentContainerStyle}
-            //keyExtractor={({ id }, index) => index}
             numColumns={columns}
+            enableEmptySections={true}
             data = {this.state.dataSource}
             renderItem={({ item }) => {
               if (item.empty) {
@@ -73,7 +100,7 @@ export default class FieldsListScreen extends React.Component {
                         <View style={styles.item}>
                           <Text style={styles.user}>{item.cropType}</Text>
                           <Text style={styles.user}>{item.area}</Text>
-                          <Button title="See more"
+                          <Button title={translate('fieldsList.see_more')}
                             type="clear"
                             onPress={ () => {
                               navigation.navigate('FieldDetailsScreen', {
