@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, SafeAreaView, FlatList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, FlatList, SectionList, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { API_ABSOLUTE_PATH } from '../config/Config';
 import { styles } from '../assets/styles/stylesheets';
 import ActionButton from 'react-native-action-button';
 import { Card, Button } from 'react-native-elements';
 import i18n, { translate } from '../config/i18n';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Header } from 'react-native-elements';
+import { SectionGrid } from 'react-native-super-grid';
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
@@ -20,25 +21,72 @@ export default class FieldsListScreen extends React.Component {
         throw Error(response.statusText);
       }
       const json = await response.json();
-      this.setState({ isLoading: false, dataSource: json, dataSourceHolder: json, hasAnyErrors: false });
+
+      // sections
+      const dataSource = this.groupByCropType(json)
+      console.log('Data source filtered', JSON.stringify(dataSource))
+      this.setState({ isLoading: false, dataSource: dataSource, dataSourceHolder: dataSource, hasAnyErrors: false });
     } catch (error) {
       console.log(error);
       this.setState({ isLoading: false, hasAnyErrors: true })
     }
   }
 
+  groupByCropType(objetoArray) {
+    var sections = [];
+
+    var objArray = []
+    objetoArray.forEach(element => {
+      var cropTypeName = null
+      if (element['cropType'] == null) {
+        cropTypeName = "UNDEFINED"
+      } else {
+        cropTypeName = element['cropType'].toUpperCase()
+      }
+      objArray.push({
+        name: element.name,
+        cropType: cropTypeName,
+        area: element.area
+      })
+    });
+
+    objArray.forEach(newElement => {
+        var titleName = newElement['cropType']
+        let indexSection = sections.findIndex(i => i.title == titleName)
+        if (indexSection != -1) {
+          sections[indexSection].data.push(newElement)
+        } else {
+          sections.push({ title : titleName, data : [ newElement ] })
+        }
+    });
+
+    return sections
+  }
+  
   clear = () => {
     this.search.clear();
     this.setState({dataSource: this.state.dataSourceHolder})
   };
 
   SearchFilterFunction(text) {
-    const newData = this.state.dataSourceHolder.filter(function(item) {
-      const itemData = item.name ? item.name.toUpperCase() : ''.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
-
+    var newData = this.state.dataSourceHolder
+    if (text != '') {
+      var sections = []
+      this.state.dataSourceHolder.forEach(item => {
+        var filteredItems = []
+        item.data.forEach(element => {
+          if (element.name.includes(text) || element.cropType.includes(text) ) {
+            filteredItems.push(element)
+          }
+        })
+          sections.push({
+            title: item.title,
+            data: filteredItems
+          })
+      });
+      newData = sections
+  }
+  
     this.setState({
       dataSource: newData,
       search: text,
@@ -47,7 +95,7 @@ export default class FieldsListScreen extends React.Component {
 
   render() {
     const { navigation } = this.props;
-    const columns = 3;
+    const columns = 2;
 
     if (this.state.isLoading) {
       return (
@@ -76,24 +124,19 @@ export default class FieldsListScreen extends React.Component {
           value={this.state.search}
         />
         <View style={styles.list}>
-          <FlatList
-            contentContainerStyle={styles.contentContainerStyle}
-            numColumns={columns}
-            enableEmptySections={true}
-            data = {this.state.dataSource}
-            renderItem={({ item }) => {
-              if (item.empty) {
-                return <View style={[styles.item, styles.itemEmpty]} />;
-              }
-              return (
-                <TouchableOpacity style={styles.item}
+        <SectionGrid
+            columns={columns}
+            itemDimension={180}
+            sections={ this.state.dataSource }
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.item}
                   onPress={ () => {
                     navigation.navigate('FieldDetailsScreen', {
                       field: JSON.stringify(item),
                     });
                   }}>
                 <Card 
-                  containerStyle={{padding: 20}}
+                  containerStyle={{padding: 10}}
                   style={styles.item}
                   title={item.name}>
                     {
@@ -112,10 +155,10 @@ export default class FieldsListScreen extends React.Component {
                     }
                   </Card>
                   </TouchableOpacity>
-              );
-            }}
-            listkey={({ id }, index) => index}
-            //keyExtractor={({ id }, index) => id}
+            )}
+            renderSectionHeader={({ section }) => (
+              <Header centerComponent={ <Text style={{ fontSize: 20, color: '#fff' }}>{section.title}</Text>} />
+            )}
           />
           </View>
           <ActionButton
