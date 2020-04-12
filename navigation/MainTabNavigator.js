@@ -35,27 +35,4 @@ FieldsStack.navigationOptions = {
 
 FieldsStack.path = '';
 
-const NewFieldStack = createStackNavigator(
-  {
-    NewField: NewFieldScreen,
-  },
-  config
-);
-
-NewFieldStack.navigationOptions = {
-  tabBarLabel: 'Add Field',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name="ios-add" />
-  ),
-};
-
-NewFieldStack.path = '';
-
-const tabNavigator = createBottomTabNavigator({
-  FieldsStack,
-  NewFieldStack,
-});
-
-tabNavigator.path = '';
-
 export default FieldsStack;

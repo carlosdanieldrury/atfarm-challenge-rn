@@ -4,6 +4,7 @@ import { API_ABSOLUTE_PATH } from '../config/Config'
 import { styles } from '../assets/styles/stylesheets'
 import ActionButton from 'react-native-action-button';
 import { Card, Button } from 'react-native-elements'
+import i18n, { translate } from '../config/i18n'
 
 export default class FieldsListScreen extends React.Component {
   constructor(props) {
@@ -101,5 +102,5 @@ export default class FieldsListScreen extends React.Component {
 }
 
 FieldsListScreen.navigationOptions = {
-  title: 'Fields List',
+  title: translate('fieldsList.title')
 };

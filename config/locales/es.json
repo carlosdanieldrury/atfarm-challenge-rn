@@ -1,0 +1,22 @@
+{
+    "fieldsList" : { 
+        "title" : "Lista de Campos"
+    },
+    "fieldDetails" : { 
+        "title" : "Detalles de Campo"
+    },
+    "newField" : { 
+        "title" : "Campo nuevo",
+        "error_create" : "Hubo un error al crear un campo nuevo! Intenta después.",
+        "validation_name" : "Nombre debe tener al menos 2 caracteres.",
+        "validation_area_min_max" : "La area no puede ser menor que 0 e mayor que 1000",
+        "success_create" : "Nuevo campo creado exitosamente!",
+        "create_new" : "Crea nuevo campo",
+        "send": "Guardar"
+    },
+    "common" : {
+        "name": "Nombre",
+        "cropType": "Tipo de Semiente",
+        "area": "Area"
+    }
+}

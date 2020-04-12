@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import { View, Picker, StyleSheet, TextInput, Text, Button, ActivityIndicator } from 'react-native';
-import { API_ABSOLUTE_PATH } from '../config/Config'
-import * as yup from 'yup'
-import { Formik } from 'formik'
+import { API_ABSOLUTE_PATH } from '../config/Config';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import i18n, { translate } from '../config/i18n';
 
 
 export default class NewFieldScreen extends React.Component {
@@ -78,7 +79,7 @@ export default class NewFieldScreen extends React.Component {
     if (this.state.hasAnyErrors) {
       return (
         <View style={{ flex: 1, padding: 20 }}>
-          <Text>There is an error while downloading information</Text>
+          <Text>{translate('newField.error_create')}</Text>
         </View>
       )
     }
@@ -86,11 +87,11 @@ export default class NewFieldScreen extends React.Component {
     if (this.state.success) {
       return (
         <View style={{ flex: 1, padding: 20 }}>
-          <Text>Success! Field has been created on the server!</Text>
+        <Text>{translate('newField.success_create')}</Text>
           <Text 
               onPress={() => {
                 this.setState({ success: false });
-              }}>Create a new one!</Text>
+              }}>{translate('newField.create_new')}</Text>
         </View>
       )
     }
@@ -102,15 +103,15 @@ export default class NewFieldScreen extends React.Component {
         validationSchema={yup.object().shape({
           name: yup
                 .string("Name")
-                .min(2, "At least 2 caracters")
+                .min(2, translate('newField.validation_name'))
                 .required(),
           cropType: yup
                 .string()
                 .required(),
           area: yup
                 .number("area")
-                .max(1000, "min value 1 and max value 1000")
-                .min(1, "min value 1 and max value 1000")
+                .max(1000, translate('newField.validation_area_min_max'))
+                .min(1, translate('newField.validation_area_min_max'))
                 .required()
 
         }) }
@@ -121,7 +122,7 @@ export default class NewFieldScreen extends React.Component {
               value= {values.name}
               onChangeText={handleChange('name')}
               onBlur={() => setFieldTouched('name')}
-              placeholder="Name"
+              placeholder={translate('common.name')}
             />
             {touched.name && errors.name &&
               <Text style={{ fontSize: 10, color: 'red' }}>{errors.name}</Text>
@@ -140,14 +141,14 @@ export default class NewFieldScreen extends React.Component {
             <TextInput
               value={values.area}
               onChangeText={handleChange('area')}
-              placeholder="Area"
+              placeholder={translate('common.area')}
               onBlur={() => setFieldTouched('area')}
             />
             {touched.area && errors.area &&
               <Text style={{ fontSize: 10, color: 'red' }}>{errors.area}</Text>
             }
             <Button
-              title='Send'
+              title={translate('newField.send')}
               disabled={!isValid}
               onPress={handleSubmit}
             />
@@ -159,7 +160,7 @@ export default class NewFieldScreen extends React.Component {
 }
 
 const styles = StyleSheet.create ({
-  
+
 });
 
 const cropTypes = [
@@ -167,5 +168,5 @@ const cropTypes = [
 ]
 
 NewFieldScreen.navigationOptions = {
-  title: 'New Field',
+  title: translate('newField.title'),
 };

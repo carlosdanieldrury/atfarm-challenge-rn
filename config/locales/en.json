@@ -1,0 +1,22 @@
+{
+    "fieldsList" : { 
+        "title" : "Fields List"
+    },
+    "fieldDetails" : { 
+        "title" : "Field Details"
+    },
+    "newField" : { 
+        "title" : "New Field",
+        "error_create" : "There is an error while creating a new Field",
+        "validation_name" : "Name should have at least 2 characters.",
+        "validation_area_min_max" : "Min value 1 and max value 1000",
+        "success_create" : "Success! Field has been created on the server!",
+        "create_new" : "Create a new one!",
+        "send": "Send"
+    },
+    "common" : {
+        "name": "Name",
+        "cropType": "Crop Type",
+        "area": "Area"
+    }
+}
