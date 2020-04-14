@@ -1,9 +1,12 @@
-import React, { Component, Fragment } from 'react';
-import { View, Picker, StyleSheet, TextInput, Text, Button, ActivityIndicator } from 'react-native';
+import React, { Fragment } from 'react';
+import { View, Picker, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { Button } from 'react-native-elements';
 import { API_ABSOLUTE_PATH } from '../config/Config';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import i18n, { translate } from '../config/i18n';
+import { Input } from 'react-native-elements';
+import { styles as stylesProject } from '../assets/styles/stylesheets';
 
 
 export default class NewFieldScreen extends React.Component {
@@ -118,7 +121,8 @@ export default class NewFieldScreen extends React.Component {
       >
         {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
           <Fragment>
-            <TextInput
+            <Input
+              inputContainerStyle={ stylesProject.input }
               value= {values.name}
               onChangeText={handleChange('name')}
               onBlur={() => setFieldTouched('name')}
@@ -128,6 +132,7 @@ export default class NewFieldScreen extends React.Component {
               <Text style={{ fontSize: 10, color: 'red' }}>{errors.name}</Text>
             }
             <Picker 
+            style={stylesProject.pickerStyle}
             value= {values.cropType} 
             selectedValue = { values.cropType }
             onValueChange={handleChange('cropType')}>
@@ -138,7 +143,8 @@ export default class NewFieldScreen extends React.Component {
                 }
             </Picker>
 
-            <TextInput
+            <Input
+              inputContainerStyle={ stylesProject.input }
               value={values.area}
               onChangeText={handleChange('area')}
               placeholder={translate('common.area')}
@@ -148,6 +154,7 @@ export default class NewFieldScreen extends React.Component {
               <Text style={{ fontSize: 10, color: 'red' }}>{errors.area}</Text>
             }
             <Button
+              buttonStyle={stylesProject.sendButton}
               title={translate('newField.send')}
               disabled={!isValid}
               onPress={handleSubmit}

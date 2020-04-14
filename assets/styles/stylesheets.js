@@ -17,6 +17,15 @@ export const styles = StyleSheet.create({
         paddingTop: 30,
         paddingBottom: 30
     },
+    input: {
+        margin : 30
+    },
+    pickerStyle:{
+        margin : 30
+    },
+    sendButton: {
+        padding: 30
+    },
     contentContainerStyle: {
         paddingBottom: 50
     },

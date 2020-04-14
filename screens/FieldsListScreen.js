@@ -22,9 +22,7 @@ export default class FieldsListScreen extends React.Component {
       }
       const json = await response.json();
 
-      // sections
       const dataSource = this.groupByCropType(json)
-      console.log('Data source filtered', JSON.stringify(dataSource))
       this.setState({ isLoading: false, dataSource: dataSource, dataSourceHolder: dataSource, hasAnyErrors: false });
     } catch (error) {
       console.log(error);
